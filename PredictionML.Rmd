@@ -1,0 +1,91 @@
+
+## 1. Loading and preprocessing the data.
+
+### Downloading the data if need.
+```{r}
+## Checks "data" directory if it doesn't exist then create.
+if (!file.exists("data")) {
+  message("Creating data directory")
+  dir.create("data")
+}
+
+## Check is training data dowloaded before.
+if (!file.exists("data/pml-training.csv")) {
+  ## Data's URL
+  trainingFileURL <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+  
+  ## File's destination.
+  dataFile ="data/pml-training.csv"
+
+  ## Download data.
+  download.file(trainingFileURL, destfile=dataFile, method="curl")
+}
+```
+
+### Data overview.
+```{r}
+trainingDataSet <- read.csv(file="data/pml-training.csv",head=TRUE,sep=",")
+```
+
+```{r}
+dim(trainingDataSet)
+```
+
+```{r}
+table(trainingDataSet$classe)
+```
+
+## 2. Create Cross-validation data: 60% training, 40% testing.
+```{r}
+library(caret)
+trainset <- createDataPartition(trainingDataSet$classe, p = 0.6, list = FALSE)
+trainingData <- trainingDataSet[trainset, ]
+testingData <- trainingDataSet[-trainset, ]
+
+dim(trainingData)
+
+dim(testingData)
+```
+
+## Cleaning data support for prediction performance.
+```{r}
+# remove near zero variance collumn.
+trainingData <- trainingData[, -nearZeroVar(trainingData)]
+testingData <- testingData[, -nearZeroVar(testingData)]
+
+
+## remove columns have more than 20% missing values
+totalNA <- sapply(trainingData, function(x) {
+    sum(!(is.na(x) | x == ""))
+})
+
+NAColumn <- names(totalNA[totalNA < 0.2 * length(trainingData$classe)])
+
+## Remove columns are not importance in predicting Classe variable in dataset.
+unuseColumn <- c("X", "user_name", "timestamp", "new_window")
+removeColumns <- c(unuseColumn, NAColumn)
+
+trainingData <- trainingData[, !names(trainingData) %in% removeColumns]
+testingData <- testingData[, !names(testingData) %in% removeColumns]
+
+```
+
+## 3.Predict with trees. Using random forest as prediction agorithm.
+```{r}
+library(randomForest)
+rfModel <- randomForest(classe ~ ., data = trainingData, importance = TRUE, ntrees = 10)
+```
+
+### Random forest model performance on training data.
+```{r}
+prdTraining <- predict(rfModel, trainingData)
+print(confusionMatrix(prdTraining, trainingData$classe))
+```
+
+### Random forest model performance on testing data (Out-of-Sample).
+```{r}
+prdCrossValidation <- predict(rfModel, testingData)
+print(confusionMatrix(prdCrossValidation, testingData$classe))
+```
+Out-of-sample error is 1 - 0.998 = 0.002 so model is quite greate.
+
