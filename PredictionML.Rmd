@@ -47,7 +47,7 @@ dim(trainingData)
 dim(testingData)
 ```
 
-## Cleaning data support for prediction performance.
+### Cleaning data support for prediction performance.
 ```{r}
 # remove near zero variance collumn.
 trainingData <- trainingData[, -nearZeroVar(trainingData)]
@@ -71,6 +71,9 @@ testingData <- testingData[, !names(testingData) %in% removeColumns]
 ```
 
 ## 3.Predict with trees. Using random forest as prediction agorithm.
+Why I chose Random forests ?
+- Random forests are usually one of the two top performing algorithms along with boosting in prediction contests.
+- Random forests are very accurate.
 ```{r}
 library(randomForest)
 rfModel <- randomForest(classe ~ ., data = trainingData, importance = TRUE, ntrees = 10)
@@ -87,5 +90,6 @@ print(confusionMatrix(prdTraining, trainingData$classe))
 prdCrossValidation <- predict(rfModel, testingData)
 print(confusionMatrix(prdCrossValidation, testingData$classe))
 ```
-Out-of-sample error is 1 - 0.998 = 0.002 so model is quite greate.
+Out-of-sample error is 1 - 0.998 = 0.002 so model have done well.
+
 

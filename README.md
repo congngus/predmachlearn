@@ -80,7 +80,7 @@ dim(testingData)
 ## [1] 7846  160
 ```
 
-## Cleaning data support for prediction performance.
+### Cleaning data support for prediction performance.
 
 ```r
 # remove near zero variance collumn.
@@ -104,6 +104,9 @@ testingData <- testingData[, !names(testingData) %in% removeColumns]
 ```
 
 ## 3.Predict with trees. Using random forest as prediction agorithm.
+Why I chose Random forests ?
+- Random forests are usually one of the two top performing algorithms along with boosting in prediction contests.
+- Random forests are very accurate.
 
 ```r
 library(randomForest)
@@ -171,11 +174,11 @@ print(confusionMatrix(prdCrossValidation, testingData$classe))
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 2232    0    0    0    0
-##          B    0 1518    3    0    0
-##          C    0    0 1363    4    0
-##          D    0    0    2 1282    7
-##          E    0    0    0    0 1435
+##          A 2232    1    0    0    0
+##          B    0 1517    5    0    0
+##          C    0    0 1360    1    0
+##          D    0    0    3 1285    5
+##          E    0    0    0    0 1437
 ## 
 ## Overall Statistics
 ##                                         
@@ -184,20 +187,21 @@ print(confusionMatrix(prdCrossValidation, testingData$classe))
 ##     No Information Rate : 0.284         
 ##     P-Value [Acc > NIR] : <2e-16        
 ##                                         
-##                   Kappa : 0.997         
+##                   Kappa : 0.998         
 ##  Mcnemar's Test P-Value : NA            
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity             1.000    1.000    0.996    0.997    0.995
-## Specificity             1.000    1.000    0.999    0.999    1.000
-## Pos Pred Value          1.000    0.998    0.997    0.993    1.000
-## Neg Pred Value          1.000    1.000    0.999    0.999    0.999
+## Sensitivity             1.000    0.999    0.994    0.999    0.997
+## Specificity             1.000    0.999    1.000    0.999    1.000
+## Pos Pred Value          1.000    0.997    0.999    0.994    1.000
+## Neg Pred Value          1.000    1.000    0.999    1.000    0.999
 ## Prevalence              0.284    0.193    0.174    0.164    0.184
-## Detection Rate          0.284    0.193    0.174    0.163    0.183
-## Detection Prevalence    0.284    0.194    0.174    0.165    0.183
-## Balanced Accuracy       1.000    1.000    0.998    0.998    0.998
+## Detection Rate          0.284    0.193    0.173    0.164    0.183
+## Detection Prevalence    0.285    0.194    0.173    0.165    0.183
+## Balanced Accuracy       1.000    0.999    0.997    0.999    0.998
 ```
-Out-of-sample error is 1 - 0.998 = 0.002 so model is quite greate.
+Out-of-sample error is 1 - 0.998 = 0.002 so model have done well.
+
 
